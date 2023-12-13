@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  test-build:
+    container_name: test-build
+    build: .
+    image: test-build:main
+    ports:
+      - '4000:80'
+    restart: always
