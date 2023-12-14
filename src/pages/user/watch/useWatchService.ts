@@ -16,7 +16,7 @@ export const useWatchService = () => {
     const { success, params } = value;
     try {
       const res = await productApi.getList(params);
-      if (res) success && success(res.data);
+      if (res) success && success(res);
     } catch (error) {}
   };
 

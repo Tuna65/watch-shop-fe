@@ -1,9 +1,20 @@
 import { useTranslation } from "react-i18next";
 import Dropdown from "../../../../component/Dropdown";
+import { useSearchQuery } from "../../../../hooks/useSearchQuery";
+import { useCallback } from "react";
 type Props = {};
 
 const CFilter = (props: Props) => {
   const { t } = useTranslation();
+  const { params, onParams } = useSearchQuery();
+
+  const handleSort = useCallback(
+    (type: string) => {
+      onParams({ ...params, sort: `price,${type}`, page: 0 });
+    },
+    [params]
+  );
+
   return (
     <div className="shadow rounded-md p-3 border-spacing-1 flex justify-end mt-3">
       <div className="flex items-center gap-3">
@@ -19,8 +30,14 @@ const CFilter = (props: Props) => {
             <Dropdown
               title={t("Sắp xếp")}
               options={[
-                { label: <p>Cao đến thấp</p>, value: "desc" },
-                { label: <p>Thấp đến cao</p>, value: "desc" },
+                {
+                  label: <p onClick={() => handleSort("asc")}>Cao đến thấp</p>,
+                  value: "desc",
+                },
+                {
+                  label: <p onClick={() => handleSort("desc")}>Thấp đến cao</p>,
+                  value: "desc",
+                },
               ]}
             />
           </div>

@@ -1,10 +1,11 @@
 import { Button } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProductCard from "../../../../component/ProductCard";
 import { useSearchQuery } from "../../../../hooks/useSearchQuery";
 import { IProduct } from "../../../../models/product";
 import { useWatchService } from "../useWatchService";
+import { TPagination } from "../../../../models";
 
 export interface IListWatchProps {}
 
@@ -15,13 +16,32 @@ const ListWatch = (props: IListWatchProps) => {
 
   //State
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [metaData, setMetaData] = useState<TPagination>();
 
   //Handler
-  const getValue = useCallback((products: IProduct[]) => {
-    (params.page ?? 0) == 0
-      ? setProducts(products)
-      : setProducts((prev) => [...prev, ...products]);
-  }, []);
+  const getValue = useCallback(
+    (products: {
+      data: IProduct[];
+      pageNumber: number;
+      pageSize: number;
+      totalPages: number;
+    }) => {
+      const page = {
+        page: products?.pageNumber,
+        size: products.pageSize,
+        totalPages: products.totalPages,
+      };
+      setMetaData(page);
+      (params.page ?? 0) == 0
+        ? setProducts(products.data)
+        : setProducts((prev) => [...prev, ...products.data]);
+    },
+    [params]
+  );
+
+  const pageParams = useMemo(() => {
+    return params.page ? +params.page + 1 : 0;
+  }, [params.page]);
 
   //Effect
   React.useEffect(() => {
@@ -50,23 +70,26 @@ const ListWatch = (props: IListWatchProps) => {
           </h6>
           <div className="mt-5">
             <div className="grid grid-cols-5 gap-3">
-              {products.map((p, idx) => (
+              {products?.map((p, idx) => (
                 <ProductCard key={`product-${idx}`} data={p} />
               ))}
             </div>
           </div>
           <div className="flex justify-center mt-3">
-            <Button
-              size="middle"
-              onClick={() =>
-                onParams({
-                  ...params,
-                  page: params.page ? +params.page + 1 : 0,
-                })
-              }
-            >
-              {t("Xem thêm sản phẩm")}
-            </Button>
+            {products?.length > 0 &&
+              (metaData?.totalPages ?? 0) > pageParams && (
+                <Button
+                  size="middle"
+                  onClick={() =>
+                    onParams({
+                      ...params,
+                      page: pageParams,
+                    })
+                  }
+                >
+                  {t("Xem thêm sản phẩm")}
+                </Button>
+              )}
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ const productApi = {
     return Api.get(`${basePath}/${id}`);
   },
   bestSaler() {
-    return Api.get(`${basePath}/best-saler`, { params: { page: 1, size: 5 } });
+    return Api.get(`${basePath}/best-saler`, { params: { page: 0, size: 5 } });
   },
   packsize(params: { productId: string }) {
     return Api.get(`${basePath}/pack-size`, { params });

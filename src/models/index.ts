@@ -18,4 +18,5 @@ export type TPath = {
 export type TPagination = {
   page: number;
   size: number;
+  totalPages: number;
 };
